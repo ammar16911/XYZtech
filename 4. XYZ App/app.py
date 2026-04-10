@@ -404,8 +404,12 @@ def too_large(e):
     return jsonify({"error": f"File too large (max {MAX_FILE_SIZE // (1024*1024)} MB)"}), 413
 
 
+# Initialize the database at module import time so it works under both
+# `python app.py` (dev) and `gunicorn app:app` (production on Render).
+init_db()
+
+
 if __name__ == "__main__":
-    init_db()
     print("\n" + "=" * 60)
     print("  XYZtech DMAIC Tracker")
     print("=" * 60)
