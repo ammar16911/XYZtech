@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XYZtech DMAIC Tracker</title>
+<style>
+:root {
+  --navy: #1A237E;
+  --navy-light: #3949AB;
+  --red: #C62828;
+  --green: #2E7D32;
+  --orange: #E65100;
+  --purple: #6A1B9A;
+  --blue: #1565C0;
+  --amber: #F9A825;
+  --light-green: #C8E6C9;
+  --light-red: #FFCDD2;
+  --light-yellow: #FFF9C4;
+  --light-blue: #E3F2FD;
+  --dark: #263238;
+  --gray: #546E7A;
+  --light-gray: #ECEFF1;
+  --bg: #F5F6FA;
+  --card-bg: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  line-height: 1.5;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: var(--navy);
+  color: white;
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header .title h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+header .title p {
+  font-size: 11px;
+  color: #B3E5FC;
+  font-style: italic;
+}
+
+header .user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+header .user-box label {
+  font-size: 12px;
+  color: #B3E5FC;
+}
+
+header .user-box select {
+  background: white;
+  color: var(--dark);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard {
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h2 {
+  font-size: 14px;
+  color: var(--navy);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+/* Phase progress bars */
+.phase-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.phase-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 120px;
+  align-items: center;
+  gap: 12px;
+}
+
+.phase-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 14px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase-label.DEFINE { background: var(--blue); }
+.phase-label.MEASURE { background: var(--green); }
+.phase-label.ANALYZE { background: var(--orange); }
+.phase-label.IMPROVE { background: var(--purple); }
+.phase-label.CONTROL { background: var(--red); }
+.phase-label.OVERALL { background: var(--navy); }
+
+.progress-bar {
+  height: 22px;
+  background: white;
+  border: 1px solid #CFD8DC;
+  border-radius: 11px;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+.progress-bar .done { background: var(--green); height: 100%; }
+.progress-bar .partial { background: var(--amber); height: 100%; }
+.progress-bar .todo { background: transparent; height: 100%; }
+
+.progress-count {
+  font-size: 11px;
+  color: var(--gray);
+  text-align: right;
+}
+
+/* Activity log */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  font-size: 11px;
+  color: var(--gray);
+  padding: 8px 10px;
+  background: var(--light-gray);
+  border-left: 3px solid var(--navy);
+  border-radius: 4px;
+}
+
+.activity-item .user { color: var(--navy); font-weight: 700; }
+.activity-item .tool { color: var(--dark); font-weight: 600; }
+
+/* ===== FILTERS ===== */
+.filters {
+  padding: 0 28px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  max-width: 1600px;
+  margin: 0 auto 16px auto;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: white;
+  border: 1px solid #CFD8DC;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-btn:hover { background: var(--light-gray); }
+.filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 14px;
+  border: 1px solid #CFD8DC;
+  border-radius: 20px;
+  font-size: 13px;
+  outline: none;
+}
+.search-input:focus { border-color: var(--navy); }
+
+/* ===== PHASE SECTIONS ===== */
+.phase-section {
+  padding: 0 28px;
+  max-width: 1600px;
+  margin: 0 auto 32px auto;
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 14px 20px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-left: 6px solid var(--navy);
+}
+
+.phase-header.DEFINE { border-left-color: var(--blue); }
+.phase-header.MEASURE { border-left-color: var(--green); }
+.phase-header.ANALYZE { border-left-color: var(--orange); }
+.phase-header.IMPROVE { border-left-color: var(--purple); }
+.phase-header.CONTROL { border-left-color: var(--red); }
+
+.phase-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 16px;
+}
+.phase-num.DEFINE { background: var(--blue); }
+.phase-num.MEASURE { background: var(--green); }
+.phase-num.ANALYZE { background: var(--orange); }
+.phase-num.IMPROVE { background: var(--purple); }
+.phase-num.CONTROL { background: var(--red); }
+
+.phase-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.phase-header .tagline {
+  font-size: 12px;
+  color: var(--gray);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.phase-stats {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--gray);
+  text-align: right;
+}
+.phase-stats strong { color: var(--navy); font-size: 14px; }
+
+/* Substep block */
+.substep-block {
+  margin-bottom: 18px;
+}
+
+.substep-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 8px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.substep-code {
+  font-size: 11px;
+  background: var(--navy);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 12px;
+}
+
+/* ===== TOOL CARD ===== */
+.tool-card {
+  background: var(--card-bg);
+  border: 1.5px solid #CFD8DC;
+  border-radius: 10px;
+  padding: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.tool-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.tool-card.done { background: var(--light-green); border-color: var(--green); }
+.tool-card.partial { background: var(--light-yellow); border-color: var(--amber); }
+.tool-card.todo { background: white; border-color: #CFD8DC; }
+
+.tool-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.tool-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+  flex: 1;
+  padding-right: 8px;
+}
+
+.tool-status-icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+.tool-status-icon.done { background: var(--green); }
+.tool-status-icon.partial { background: var(--amber); }
+.tool-status-icon.todo { background: #BDBDBD; }
+
+.tool-desc {
+  font-size: 11px;
+  color: var(--gray);
+  font-style: italic;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.tool-questions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.q-badge {
+  background: var(--navy);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.tool-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.tool-controls select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #CFD8DC;
+  border-radius: 6px;
+  font-size: 11px;
+  background: white;
+  cursor: pointer;
+}
+
+.tool-notes {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid #CFD8DC;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  resize: vertical;
+  background: white;
+  color: var(--dark);
+}
+.tool-notes:focus { outline: none; border-color: var(--navy); }
+
+.tool-meta {
+  font-size: 10px;
+  color: var(--gray);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ===== FILE UPLOADS ===== */
+.tool-uploads {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #CFD8DC;
+}
+
+.tool-uploads-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tool-uploads-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.upload-btn {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+.upload-btn:hover { background: var(--navy-light); }
+.upload-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+.upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upload-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: white;
+  border: 1px solid #CFD8DC;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--dark);
+}
+
+.upload-item .icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.upload-item .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 500;
+}
+.upload-item .name:hover { text-decoration: underline; }
+
+.upload-item .size {
+  color: var(--gray);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.upload-item .delete {
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.upload-item .delete:hover { color: #8E0000; }
+
+.upload-empty {
+  font-size: 10px;
+  color: var(--gray);
+  font-style: italic;
+  padding: 3px 0;
+}
+
+.upload-progress {
+  font-size: 10px;
+  color: var(--amber);
+  font-style: italic;
+  padding: 3px 0;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.save-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.save-indicator.visible { opacity: 1; }
+.save-indicator.saving { background: var(--amber); color: white; }
+.save-indicator.saved { background: var(--green); color: white; }
+.save-indicator.error { background: var(--red); color: white; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray);
+  font-style: italic;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .dashboard { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .phase-header { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title">
+    <h1>XYZtech DMAIC Tracker</h1>
+    <p>Proposal Creation Cycle Time Reduction — Lean Six Sigma Project</p>
+  </div>
+  <div class="user-box">
+    <label for="current-user">You:</label>
+    <select id="current-user">
+      {% for member in team_members %}
+      <option value="{{ member }}">{{ member }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</header>
+
+<div class="dashboard">
+  <div class="card">
+    <h2>Phase Progress</h2>
+    <div id="phase-progress" class="phase-progress">Loading...</div>
+  </div>
+  <div class="card">
+    <h2>Recent Activity</h2>
+    <div id="activity-list" class="activity-list">Loading...</div>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="todo">To Do</button>
+  <button class="filter-btn" data-filter="partial">In Progress</button>
+  <button class="filter-btn" data-filter="done">Done</button>
+  <button class="filter-btn" data-filter="mine">My Tasks</button>
+  <input type="text" class="search-input" id="search" placeholder="Search tools, questions, or notes...">
+</div>
+
+<div id="phases-container">Loading...</div>
+
+<script>
+const PHASE_INFO = {
+  DEFINE:  { num: 1, tagline: "Establish Focus" },
+  MEASURE: { num: 2, tagline: "Create Baseline" },
+  ANALYZE: { num: 3, tagline: "Discover Root Causes" },
+  IMPROVE: { num: 4, tagline: "Devise Solutions" },
+  CONTROL: { num: 5, tagline: "Sustain Benefits" },
+};
+
+const STATUS_LABEL = { done: "✓", partial: "◐", todo: "○" };
+
+let allTools = [];
+let currentFilter = "all";
+let searchQuery = "";
+
+// User persistence via localStorage
+const userSelect = document.getElementById("current-user");
+const savedUser = localStorage.getItem("dmaic-user");
+if (savedUser) userSelect.value = savedUser;
+userSelect.addEventListener("change", () => {
+  localStorage.setItem("dmaic-user", userSelect.value);
+  render();
+});
+
+async function fetchTools() {
+  const res = await fetch("/api/tools");
+  allTools = await res.json();
+}
+
+async function fetchStats() {
+  const res = await fetch("/api/stats");
+  return res.json();
+}
+
+async function updateTool(toolId, updates) {
+  const card = document.querySelector(`[data-tool-id="${toolId}"]`);
+  const indicator = card.querySelector(".save-indicator");
+  indicator.className = "save-indicator visible saving";
+  indicator.textContent = "Saving...";
+
+  try {
+    const res = await fetch(`/api/tools/${toolId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...updates, user: userSelect.value }),
+    });
+    if (!res.ok) throw new Error("Update failed");
+    const updated = await res.json();
+
+    const idx = allTools.findIndex(t => t.id === toolId);
+    if (idx >= 0) allTools[idx] = updated;
+
+    indicator.className = "save-indicator visible saved";
+    indicator.textContent = "Saved";
+    setTimeout(() => indicator.classList.remove("visible"), 1500);
+
+    // Refresh dashboard stats and card color
+    renderDashboard();
+    if ("status" in updates) {
+      // Re-render just this card's classes
+      card.className = `tool-card ${updated.status}`;
+      card.querySelector(".tool-status-icon").className = `tool-status-icon ${updated.status}`;
+      card.querySelector(".tool-status-icon").textContent = STATUS_LABEL[updated.status];
+    }
+    const meta = card.querySelector(".tool-meta");
+    if (meta) {
+      const ts = updated.updated_at ? new Date(updated.updated_at + "Z").toLocaleString() : "";
+      meta.textContent = `Updated ${ts} by ${updated.updated_by || "—"}`;
+    }
+  } catch (e) {
+    indicator.className = "save-indicator visible error";
+    indicator.textContent = "Error";
+    console.error(e);
+  }
+}
+
+// Debounce helper
+const debounce = (fn, ms = 600) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), ms);
+  };
+};
+
+function renderDashboard() {
+  fetchStats().then(stats => {
+    const container = document.getElementById("phase-progress");
+    const phases = ["DEFINE", "MEASURE", "ANALYZE", "IMPROVE", "CONTROL"];
+    let overall = { done: 0, partial: 0, todo: 0, total: 0 };
+
+    container.innerHTML = phases.map(p => {
+      const s = stats.phases[p] || { done: 0, partial: 0, todo: 0, total: 0 };
+      overall.done += s.done; overall.partial += s.partial; overall.todo += s.todo; overall.total += s.total;
+      return phaseRow(p, s);
+    }).join("") + phaseRow("OVERALL", overall);
+
+    const actContainer = document.getElementById("activity-list");
+    if (stats.recent_activity.length === 0) {
+      actContainer.innerHTML = '<div class="empty-state" style="padding:20px;">No activity yet</div>';
+    } else {
+      actContainer.innerHTML = stats.recent_activity.map(a => {
+        const ts = new Date(a.timestamp + "Z").toLocaleString();
+        const val = (a.new_value || "").substring(0, 40);
+        return `<div class="activity-item">
+          <span class="user">${a.user}</span> updated <span class="tool">${a.tool_name}</span>
+          (${a.substep_code}) — ${a.field}: <em>${val}</em>
+          <br><span style="font-size:10px;">${ts}</span>
+        </div>`;
+      }).join("");
+    }
+  });
+}
+
+function phaseRow(phase, s) {
+  const donePct = s.total ? (s.done / s.total * 100) : 0;
+  const partPct = s.total ? (s.partial / s.total * 100) : 0;
+  return `
+    <div class="phase-row">
+      <div class="phase-label ${phase}">${phase}</div>
+      <div class="progress-bar">
+        <div class="done" style="width:${donePct}%"></div>
+        <div class="partial" style="width:${partPct}%"></div>
+      </div>
+      <div class="progress-count">${s.done} / ${s.partial} / ${s.todo} of ${s.total}</div>
+    </div>
+  `;
+}
+
+function render() {
+  renderDashboard();
+  renderPhases();
+}
+
+function renderPhases() {
+  const container = document.getElementById("phases-container");
+  const phases = ["DEFINE", "MEASURE", "ANALYZE", "IMPROVE", "CONTROL"];
+  const user = userSelect.value;
+
+  let html = "";
+  for (const phase of phases) {
+    const phaseTools = allTools.filter(t => t.phase === phase).filter(t => matchesFilter(t, user));
+    if (phaseTools.length === 0) continue;
+
+    const allForPhase = allTools.filter(t => t.phase === phase);
+    const done = allForPhase.filter(t => t.status === "done").length;
+    const total = allForPhase.length;
+    const info = PHASE_INFO[phase];
+
+    // Group by substep code
+    const substeps = {};
+    for (const t of phaseTools) {
+      const key = `${t.substep_code}|${t.substep_title}`;
+      if (!substeps[key]) substeps[key] = [];
+      substeps[key].push(t);
+    }
+
+    html += `
+      <div class="phase-section">
+        <div class="phase-header ${phase}">
+          <div class="phase-num ${phase}">${info.num}</div>
+          <div>
+            <h2>${phase}</h2>
+            <div class="tagline">${info.tagline}</div>
+          </div>
+          <div class="phase-stats">
+            <strong>${done} / ${total}</strong> complete
+          </div>
+        </div>
+    `;
+
+    for (const key of Object.keys(substeps).sort()) {
+      const [code, title] = key.split("|");
+      const tools = substeps[key];
+      html += `
+        <div class="substep-block">
+          <div class="substep-title">
+            <span class="substep-code">${code}</span>
+            ${title}
+          </div>
+          <div class="tool-grid">
+            ${tools.map(toolCard).join("")}
+          </div>
+        </div>
+      `;
+    }
+    html += `</div>`;
+  }
+
+  if (!html) {
+    html = '<div class="empty-state">No tools match the current filter.</div>';
+  }
+
+  container.innerHTML = html;
+  attachListeners();
+}
+
+function matchesFilter(tool, user) {
+  if (currentFilter === "mine" && tool.assignee !== user) return false;
+  if (currentFilter !== "all" && currentFilter !== "mine" && tool.status !== currentFilter) return false;
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    const hay = `${tool.tool_name} ${tool.tool_desc} ${tool.questions} ${tool.notes} ${tool.assignee}`.toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function toolCard(t) {
+  const questions = (t.questions || "").split(",").filter(Boolean);
+  const updatedTs = t.updated_at ? new Date(t.updated_at + "Z").toLocaleString() : "—";
+  const uploads = t.uploads || [];
+  return `
+    <div class="tool-card ${t.status}" data-tool-id="${t.id}">
+      <div class="save-indicator"></div>
+      <div class="tool-header">
+        <div class="tool-name">${escapeHtml(t.tool_name)}</div>
+        <div class="tool-status-icon ${t.status}">${STATUS_LABEL[t.status]}</div>
+      </div>
+      <div class="tool-desc">${escapeHtml(t.tool_desc || "")}</div>
+      <div class="tool-questions">
+        ${questions.map(q => `<span class="q-badge">${q.trim()}</span>`).join("")}
+      </div>
+      <div class="tool-controls">
+        <select class="status-select">
+          <option value="todo" ${t.status === "todo" ? "selected" : ""}>○ To Do</option>
+          <option value="partial" ${t.status === "partial" ? "selected" : ""}>◐ In Progress</option>
+          <option value="done" ${t.status === "done" ? "selected" : ""}>✓ Done</option>
+        </select>
+        <select class="assignee-select">
+          {% for member in team_members %}
+          <option value="{{ member }}" ${t.assignee === "{{ member }}" ? "selected" : ""}>{{ member }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <textarea class="tool-notes" placeholder="Notes...">${escapeHtml(t.notes || "")}</textarea>
+      <div class="tool-uploads">
+        <div class="tool-uploads-header">
+          <span class="tool-uploads-label">Attachments (${uploads.length})</span>
+          <button class="upload-btn" type="button">+ Upload</button>
+          <input type="file" class="hidden-file-input" />
+        </div>
+        <div class="upload-list">
+          ${uploads.length === 0
+            ? '<div class="upload-empty">No files attached</div>'
+            : uploads.map(uploadItem).join("")}
+        </div>
+      </div>
+      <div class="tool-meta">Updated ${updatedTs} by ${escapeHtml(t.updated_by || "—")}</div>
+    </div>
+  `;
+}
+
+function uploadItem(u) {
+  const ext = (u.original_name.split(".").pop() || "").toLowerCase();
+  const icon = iconForExt(ext);
+  const sizeKb = (u.size / 1024).toFixed(0);
+  const sizeStr = u.size > 1024 * 1024
+    ? (u.size / (1024 * 1024)).toFixed(1) + " MB"
+    : sizeKb + " KB";
+  return `
+    <div class="upload-item" data-upload-id="${u.id}">
+      <span class="icon">${icon}</span>
+      <a class="name" href="/api/uploads/${u.id}" target="_blank" title="${escapeHtml(u.original_name)}">${escapeHtml(u.original_name)}</a>
+      <span class="size">${sizeStr}</span>
+      <button class="delete" type="button" title="Delete">×</button>
+    </div>
+  `;
+}
+
+function iconForExt(ext) {
+  const map = {
+    pdf: "📄",
+    doc: "📝", docx: "📝",
+    xls: "📊", xlsx: "📊", csv: "📊",
+    ppt: "📑", pptx: "📑",
+    png: "🖼️", jpg: "🖼️", jpeg: "🖼️", gif: "🖼️", webp: "🖼️", svg: "🖼️",
+    txt: "📃", md: "📃",
+    zip: "🗜️", rar: "🗜️",
+  };
+  return map[ext] || "📎";
+}
+
+function escapeHtml(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function attachListeners() {
+  document.querySelectorAll(".tool-card").forEach(card => {
+    const toolId = parseInt(card.dataset.toolId);
+
+    card.querySelector(".status-select").addEventListener("change", e => {
+      updateTool(toolId, { status: e.target.value });
+    });
+    card.querySelector(".assignee-select").addEventListener("change", e => {
+      updateTool(toolId, { assignee: e.target.value });
+    });
+
+    const notes = card.querySelector(".tool-notes");
+    const debouncedSave = debounce(() => updateTool(toolId, { notes: notes.value }), 800);
+    notes.addEventListener("input", debouncedSave);
+
+    // Upload button triggers hidden file input
+    const uploadBtn = card.querySelector(".upload-btn");
+    const fileInput = card.querySelector(".hidden-file-input");
+    uploadBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+      if (fileInput.files.length === 0) return;
+      await uploadFile(toolId, fileInput.files[0]);
+      fileInput.value = "";
+    });
+
+    // Delete buttons on existing uploads
+    card.querySelectorAll(".upload-item .delete").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const item = btn.closest(".upload-item");
+        const uploadId = parseInt(item.dataset.uploadId);
+        const name = item.querySelector(".name").textContent;
+        if (confirm(`Delete "${name}"?`)) {
+          await deleteUpload(toolId, uploadId);
+        }
+      });
+    });
+  });
+}
+
+async function uploadFile(toolId, file) {
+  const card = document.querySelector(`[data-tool-id="${toolId}"]`);
+  const indicator = card.querySelector(".save-indicator");
+  const uploadList = card.querySelector(".upload-list");
+  const uploadBtn = card.querySelector(".upload-btn");
+
+  indicator.className = "save-indicator visible saving";
+  indicator.textContent = "Uploading...";
+  uploadBtn.disabled = true;
+
+  const progressEl = document.createElement("div");
+  progressEl.className = "upload-progress";
+  progressEl.textContent = `Uploading ${file.name}...`;
+  uploadList.appendChild(progressEl);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user", userSelect.value);
+
+    const res = await fetch(`/api/tools/${toolId}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: "Upload failed" }));
+      throw new Error(err.error || "Upload failed");
+    }
+
+    // Refetch the tool to get updated uploads
+    await fetchTools();
+    const updated = allTools.find(t => t.id === toolId);
+    if (updated) refreshToolCard(card, updated);
+
+    indicator.className = "save-indicator visible saved";
+    indicator.textContent = "Uploaded";
+    setTimeout(() => indicator.classList.remove("visible"), 1500);
+    renderDashboard();
+  } catch (e) {
+    indicator.className = "save-indicator visible error";
+    indicator.textContent = "Error";
+    alert("Upload failed: " + e.message);
+    progressEl.remove();
+  } finally {
+    uploadBtn.disabled = false;
+  }
+}
+
+async function deleteUpload(toolId, uploadId) {
+  const card = document.querySelector(`[data-tool-id="${toolId}"]`);
+  const indicator = card.querySelector(".save-indicator");
+  indicator.className = "save-indicator visible saving";
+  indicator.textContent = "Deleting...";
+
+  try {
+    const res = await fetch(`/api/uploads/${uploadId}?user=${encodeURIComponent(userSelect.value)}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Delete failed");
+
+    await fetchTools();
+    const updated = allTools.find(t => t.id === toolId);
+    if (updated) refreshToolCard(card, updated);
+
+    indicator.className = "save-indicator visible saved";
+    indicator.textContent = "Deleted";
+    setTimeout(() => indicator.classList.remove("visible"), 1500);
+    renderDashboard();
+  } catch (e) {
+    indicator.className = "save-indicator visible error";
+    indicator.textContent = "Error";
+    console.error(e);
+  }
+}
+
+function refreshToolCard(card, tool) {
+  // Replace the card's HTML in place without re-rendering entire page
+  const temp = document.createElement("div");
+  temp.innerHTML = toolCard(tool).trim();
+  const newCard = temp.firstElementChild;
+  card.replaceWith(newCard);
+  attachCardListeners(newCard);
+}
+
+function attachCardListeners(card) {
+  const toolId = parseInt(card.dataset.toolId);
+  card.querySelector(".status-select").addEventListener("change", e => {
+    updateTool(toolId, { status: e.target.value });
+  });
+  card.querySelector(".assignee-select").addEventListener("change", e => {
+    updateTool(toolId, { assignee: e.target.value });
+  });
+  const notes = card.querySelector(".tool-notes");
+  const debouncedSave = debounce(() => updateTool(toolId, { notes: notes.value }), 800);
+  notes.addEventListener("input", debouncedSave);
+
+  const uploadBtn = card.querySelector(".upload-btn");
+  const fileInput = card.querySelector(".hidden-file-input");
+  uploadBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    if (fileInput.files.length === 0) return;
+    await uploadFile(toolId, fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  card.querySelectorAll(".upload-item .delete").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const item = btn.closest(".upload-item");
+      const uploadId = parseInt(item.dataset.uploadId);
+      const name = item.querySelector(".name").textContent;
+      if (confirm(`Delete "${name}"?`)) {
+        await deleteUpload(toolId, uploadId);
+      }
+    });
+  });
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    renderPhases();
+  });
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  searchQuery = e.target.value;
+  renderPhases();
+});
+
+// Initial load + periodic refresh
+async function init() {
+  await fetchTools();
+  render();
+}
+init();
+setInterval(async () => {
+  await fetchTools();
+  renderPhases();
+  renderDashboard();
+}, 15000); // poll every 15s for team updates
+</script>
+
+</body>
+</html>

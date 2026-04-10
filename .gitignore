@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+venv/
+.venv/
+
+# App runtime state (regenerated on first run)
+4. XYZ App/data.db
+4. XYZ App/uploads/
+
+# XYZ Data folder is populated from seed_files on first run.
+# Files uploaded later through the web app stay local to whoever is hosting.
+5. XYZ Data/*
+!5. XYZ Data/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
